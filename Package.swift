@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "AmigoClick",
+    name: "AmigoCapy",
     platforms: [.macOS(.v12)],
     targets: [
         .executableTarget(
-            name: "AmigoClick",
-            path: "Sources/AmigoClick"
+            name: "AmigoCapy",
+            path: "Sources/AmigoCapy"
         )
     ]
 )

@@ -8,13 +8,19 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace AmigoClick
+namespace AmigoCapy
 {
     /// <summary>Затемняет все мониторы; клик выбирает точку, Esc или правый клик — отмена.</summary>
     internal sealed class PickerSession
     {
         private readonly List<PickerWindow> windows = new List<PickerWindow>();
+        private readonly string hint;
         private bool finished;
+
+        public PickerSession(string hint = "Кликни в нужное место")
+        {
+            this.hint = hint;
+        }
 
         /// <summary>Точка в физических пикселях экрана или null при отмене.</summary>
         public event Action<Native.POINT?> Completed;
@@ -23,7 +29,7 @@ namespace AmigoClick
         {
             foreach (var rect in Native.MonitorRects())
             {
-                var window = new PickerWindow(rect);
+                var window = new PickerWindow(rect, hint);
                 window.Picked += Finish;
                 windows.Add(window);
                 window.Show();
@@ -72,7 +78,7 @@ namespace AmigoClick
         };
         private readonly Border label;
 
-        public PickerWindow(Native.RECT bounds)
+        public PickerWindow(Native.RECT bounds, string hintText)
         {
             Bounds = bounds;
 
@@ -116,7 +122,7 @@ namespace AmigoClick
                 IsHitTestVisible = false,
                 Child = new TextBlock
                 {
-                    Text = "Кликни в нужное место   ·   Esc — отмена",
+                    Text = hintText + "   ·   Esc — отмена",
                     Foreground = Brushes.White,
                     FontFamily = new FontFamily("Segoe UI"),
                     FontSize = 14,

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
 
-namespace AmigoClick
+namespace AmigoCapy
 {
     /// <summary>Светлая или тёмная палитра — как выбрано в Windows.</summary>
     internal static class Theme

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace AmigoClick
+namespace AmigoCapy
 {
     internal static class Native
     {
@@ -63,6 +63,11 @@ namespace AmigoClick
         }
 
         private const uint INPUT_MOUSE = 0;
+        private const uint INPUT_KEYBOARD = 1;
+        private const uint KEYEVENTF_KEYUP = 0x0002;
+
+        public const ushort VK_RETURN = 0x0D;
+        public const ushort VK_ESCAPE = 0x1B;
         private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const uint MOUSEEVENTF_LEFTUP = 0x0004;
 
@@ -73,6 +78,7 @@ namespace AmigoClick
         public const uint MOD_NOREPEAT = 0x4000;
 
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        public const uint SWP_NOSIZE = 0x0001;
         public const uint SWP_NOACTIVATE = 0x0010;
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -95,6 +101,21 @@ namespace AmigoClick
 
         [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowLong(IntPtr hWnd, int index);
+
+        [DllImport("user32.dll")]
+        public static extern int SetWindowLong(IntPtr hWnd, int index, int value);
 
         [DllImport("winmm.dll")]
         public static extern uint timeBeginPeriod(uint period);
@@ -120,6 +141,21 @@ namespace AmigoClick
             inputs[0].u.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
             inputs[1].type = INPUT_MOUSE;
             inputs[1].u.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            SendInput(2, inputs, InputSize);
+        }
+
+        /// <summary>Нажать и отпустить клавишу в активном окне.</summary>
+        public static void PressKey(ushort vk)
+        {
+            ushort scan = (ushort)MapVirtualKey(vk, 0);
+            var inputs = new INPUT[2];
+            inputs[0].type = INPUT_KEYBOARD;
+            inputs[0].u.ki.wVk = vk;
+            inputs[0].u.ki.wScan = scan;
+            inputs[1].type = INPUT_KEYBOARD;
+            inputs[1].u.ki.wVk = vk;
+            inputs[1].u.ki.wScan = scan;
+            inputs[1].u.ki.dwFlags = KEYEVENTF_KEYUP;
             SendInput(2, inputs, InputSize);
         }
 

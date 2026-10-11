@@ -1,8 +1,8 @@
-# Рисует windows\AmigoClick.ico (256/64/48/32/24/16 px, PNG внутри ICO).
+# Рисует windows\AmigoCapy.ico (256/64/48/32/24/16 px, PNG внутри ICO).
 # Запуск: powershell -ExecutionPolicy Bypass -File windows\tools\make-icon.ps1
 Add-Type -AssemblyName System.Drawing
 
-$out = Join-Path $PSScriptRoot '..\AmigoClick.ico'
+$out = Join-Path $PSScriptRoot '..\AmigoCapy.ico'
 $sizes = 256, 64, 48, 32, 24, 16
 
 function New-IconPng([int]$size) {

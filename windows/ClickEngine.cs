@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-namespace AmigoClick
+namespace AmigoCapy
 {
     /// <summary>
     /// Кликает в отдельном потоке по Stopwatch, чтобы ритм не зависел от интерфейса.
@@ -20,17 +21,18 @@ namespace AmigoClick
 
         public void ResetCount() => Interlocked.Exchange(ref count, 0);
 
-        /// <param name="target">null — кликать под курсором, иначе в эту точку (физические пиксели).</param>
-        public void Start(int intervalMs, Native.POINT? target)
+        /// <param name="targets">Пусто — кликать под курсором, иначе по очереди в эти точки (физические пиксели).</param>
+        public void Start(int intervalMs, IReadOnlyList<Native.POINT> targets)
         {
             Stop();
             var run = new Run();
             current = run;
-            var thread = new Thread(() => Loop(run, intervalMs, target))
+            var points = new List<Native.POINT>(targets ?? new Native.POINT[0]);
+            var thread = new Thread(() => Loop(run, intervalMs, points))
             {
                 IsBackground = true,
                 Priority = ThreadPriority.AboveNormal,
-                Name = "AmigoClick engine",
+                Name = "AmigoCapy engine",
             };
             thread.Start();
         }
@@ -41,7 +43,7 @@ namespace AmigoClick
             current = null;
         }
 
-        private void Loop(Run run, int intervalMs, Native.POINT? target)
+        private void Loop(Run run, int intervalMs, List<Native.POINT> targets)
         {
             Native.timeBeginPeriod(1);
             try
@@ -50,9 +52,19 @@ namespace AmigoClick
                 double next = 0;
                 while (!run.Stopped)
                 {
-                    if (target.HasValue) Native.SetCursorPos(target.Value.X, target.Value.Y);
-                    Native.LeftClick();
-                    Interlocked.Increment(ref count);
+                    if (targets.Count == 0)
+                    {
+                        Native.LeftClick();
+                        Interlocked.Increment(ref count);
+                    }
+                    for (int i = 0; i < targets.Count && !run.Stopped; i++)
+                    {
+                        // Небольшая пауза между точками, чтобы игра успела принять оба клика.
+                        if (i > 0) Thread.Sleep(15);
+                        Native.SetCursorPos(targets[i].X, targets[i].Y);
+                        Native.LeftClick();
+                        Interlocked.Increment(ref count);
+                    }
 
                     next += intervalMs;
                     // Если поток надолго притормозили, не догоняем пачкой кликов.

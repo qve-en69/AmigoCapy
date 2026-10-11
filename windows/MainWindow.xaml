@@ -1,19 +1,22 @@
-<Window x:Class="AmigoClick.MainWindow"
+<Window x:Class="AmigoCapy.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="AmigoClick"
-        Width="384"
-        SizeToContent="Height"
-        ResizeMode="CanMinimize"
+        xmlns:local="clr-namespace:AmigoCapy"
+        Title="AmigoCapy"
+        Width="460"
+        Height="860"
+        MinWidth="384"
+        MinHeight="700"
+        ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBg}"
         FontFamily="{StaticResource UiFont}"
         Foreground="{DynamicResource Text}"
         UseLayoutRounding="True"
-        Icon="AmigoClick.ico">
+        Icon="AmigoCapy.ico">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="0" GlassFrameThickness="0,0,0,1"
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1"
                       CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
@@ -29,13 +32,14 @@
             </Rectangle.Fill>
         </Rectangle>
 
-        <StackPanel Margin="18,12,18,18">
+        <DockPanel Margin="18,12,18,18">
 
             <!-- Шапка: перетаскивание окна, статус, закрепление, свернуть, закрыть -->
-            <Grid Height="44" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+            <Grid DockPanel.Dock="Top" Height="44" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -56,8 +60,7 @@
                 </Border>
 
                 <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="AmigoClick" FontSize="17" FontWeight="Bold"/>
-                    <TextBlock Text="автокликер" FontSize="11" Foreground="{DynamicResource SubText}"/>
+                    <TextBlock Text="AmigoCapy" FontSize="17" FontWeight="Bold"/>
                 </StackPanel>
 
                 <Border x:Name="StatusPill" Grid.Column="2" CornerRadius="12" Padding="9,4,11,4"
@@ -77,17 +80,104 @@
                     </StackPanel>
                 </Border>
 
-                <Button x:Name="PinButton" Grid.Column="3" Margin="6,0,0,0" Style="{StaticResource IconButton}"
+                <Button x:Name="HelpButton" Grid.Column="3" Margin="6,0,0,0" Style="{StaticResource IconButton}" Click="Help_Click"
+                        ToolTip="Справка — что умеет приложение">
+                    <TextBlock Text="&#xE897;"/>
+                </Button>
+                <Button x:Name="PinButton" Grid.Column="4" Style="{StaticResource IconButton}"
                         Click="Pin_Click">
                     <TextBlock x:Name="PinGlyph" Text="&#xE718;"/>
                 </Button>
-                <Button Grid.Column="4" Style="{StaticResource IconButton}" Click="Minimize_Click" ToolTip="Свернуть">
+                <Button Grid.Column="5" Style="{StaticResource IconButton}" Click="Minimize_Click" ToolTip="Свернуть">
                     <TextBlock Text="&#xE921;"/>
                 </Button>
-                <Button Grid.Column="5" Style="{StaticResource IconButton}" Tag="close" Click="Close_Click" ToolTip="Закрыть">
+                <Button Grid.Column="6" Style="{StaticResource IconButton}" Tag="close" Click="Close_Click" ToolTip="Закрыть">
                     <TextBlock Text="&#xE8BB;"/>
                 </Button>
             </Grid>
+
+            <!-- Вкладки -->
+            <Border DockPanel.Dock="Top" Background="{DynamicResource Field}" CornerRadius="11" Padding="3" Margin="0,12,0,0">
+                <UniformGrid Rows="1">
+                    <RadioButton x:Name="TabClicker" GroupName="Tab" Style="{StaticResource Segment}" Height="32"
+                                 Checked="Tab_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE7C9;" FontSize="12"
+                                       Margin="0,1,7,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Кликер" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="TabPaints" GroupName="Tab" Style="{StaticResource Segment}" Height="32"
+                                 Checked="Tab_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE790;" FontSize="12"
+                                       Margin="0,1,7,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Подбор" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="TabMine" GroupName="Tab" Style="{StaticResource Segment}" Height="32"
+                                 Checked="Tab_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE73E;" FontSize="12"
+                                       Margin="0,1,7,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Мои краски" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                </UniformGrid>
+            </Border>
+
+            <Grid>
+            <!-- Вкладка «Кликер»: настройки сверху, кнопка старта прижата к низу окна -->
+            <DockPanel x:Name="ClickerPanel">
+
+            <!-- Снизу: старт, перезаход и счётчик -->
+            <StackPanel DockPanel.Dock="Bottom">
+            <Button x:Name="StartButton" Style="{StaticResource BigButton}" Margin="0,12,0,0" Click="Start_Click">
+                <Button.Effect>
+                    <DropShadowEffect x:Name="StartShadow" Color="#2685F2" BlurRadius="18" ShadowDepth="4"
+                                      Direction="270" Opacity="0.35"/>
+                </Button.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="StartGlyph" FontFamily="{StaticResource IconFont}" FontSize="13"
+                               Text="&#xE768;" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="StartText" Text="Старт" Margin="10,0" FontSize="15" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                    <Border Background="#38FFFFFF" CornerRadius="6" Padding="7,1,7,2" VerticalAlignment="Center">
+                        <TextBlock x:Name="StartKey" FontSize="12" FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+            </Button>
+
+            <!-- Перезаход: клик в точку → Esc → Enter → клики в выбранную точку -->
+            <Button x:Name="RejoinButton" Style="{StaticResource SoftButton}" Height="40" Margin="0,10,0,0"
+                    Click="Rejoin_Click"
+                    ToolTip="Выбор команды, отсчёт 3-2-1, клик в точку (окно игры станет активным), Esc, Enter и 2 секунды кликов в «Играть»">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="RejoinGlyph" FontFamily="{StaticResource IconFont}" Text="&#xE72C;" FontSize="13"
+                               Margin="0,1,8,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="RejoinText" Text="Перезаход" FontSize="13.5" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="RejoinSub" Text="клик → Esc → Enter → клики" FontSize="11" FontWeight="Normal"
+                               Margin="10,1,0,0" Opacity="0.75" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <StackPanel Orientation="Horizontal" Margin="4,6,4,0" HorizontalAlignment="Center">
+                <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE7BA;" FontSize="11"
+                           Foreground="{StaticResource Orange}" Margin="0,1,5,0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="RejoinHint" FontSize="11" TextWrapping="Wrap" VerticalAlignment="Center"
+                           Foreground="{StaticResource Orange}"
+                           Text="Только в битве и в оконном режиме игры"/>
+            </StackPanel>
+
+            <TextBlock x:Name="HintText" Margin="4,10,4,0" HorizontalAlignment="Center" FontSize="11"
+                       FontWeight="Medium" Foreground="{DynamicResource SubText}"/>
+            </StackPanel>
+
+            <!-- Сверху: настройки (прокручиваются, если окно низкое) -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                <ScrollViewer.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource SlimScrollBar}"/>
+                </ScrollViewer.Resources>
+            <StackPanel>
 
             <!-- Интервал -->
             <Border Style="{StaticResource Card}" Margin="0,12,0,0">
@@ -128,23 +218,67 @@
                                          Content="В выбранную точку" Checked="Mode_Checked"/>
                         </UniformGrid>
                     </Border>
-                    <DockPanel Margin="0,12,0,0">
-                        <Button x:Name="PickButton" DockPanel.Dock="Right" Style="{StaticResource SoftButton}"
-                                Click="Pick_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE81D;" FontSize="11"
-                                           Margin="0,1,6,0" VerticalAlignment="Center"/>
-                                <TextBlock x:Name="PickText" Text="Выбрать точку" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="CursorHint" Margin="0,12,0,0" FontSize="12"
+                               Foreground="{DynamicResource SubText}" Text="Кликает туда, где сейчас курсор"/>
+
+                    <!-- Точки «Играть» за красных и за синих — запоминаются между запусками -->
+                    <StackPanel x:Name="PointPanel" Margin="0,12,0,0">
+                        <DockPanel x:Name="RedRow">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource SoftButton}" Click="PickRed_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE81D;" FontSize="11"
+                                               Margin="0,1,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="PickRedText" Text="Выбрать" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <!-- Бледнеет только подпись, кнопка «Выбрать» всегда выглядит активной -->
+                            <StackPanel x:Name="RedInfo" Orientation="Horizontal">
+                                <Ellipse Width="10" Height="10" Fill="#E5484D" Margin="2,0,9,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Красные" Width="72" FontSize="12.5" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock x:Name="RedText" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock x:Name="TargetIcon" FontFamily="{StaticResource IconFont}" Text="&#xE707;"
-                                       FontSize="13" Foreground="{StaticResource Accent}" Margin="0,1,7,0"
-                                       VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TargetText" FontSize="12" VerticalAlignment="Center"
+                        </DockPanel>
+                        <DockPanel x:Name="BlueRow" Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource SoftButton}" Click="PickBlue_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE81D;" FontSize="11"
+                                               Margin="0,1,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="PickBlueText" Text="Выбрать" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <!-- Бледнеет только подпись, кнопка «Выбрать» всегда выглядит активной -->
+                            <StackPanel x:Name="BlueInfo" Orientation="Horizontal">
+                                <Ellipse Width="10" Height="10" Fill="#3B82F6" Margin="2,0,9,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Синие" Width="72" FontSize="12.5" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock x:Name="BlueText" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <DockPanel Margin="0,12,0,0">
+                            <Button x:Name="ShowPointsButton" DockPanel.Dock="Right" Style="{StaticResource SoftButton}"
+                                    Click="ShowPoints_Click" Margin="8,0,0,0"
+                                    ToolTip="На 3 секунды подсветить на экране, где стоят точки">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE890;" FontSize="12"
+                                               Margin="0,1,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Показать" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="Заходить за" FontSize="12" Margin="0,0,10,0" VerticalAlignment="Center"
                                        Foreground="{DynamicResource SubText}"/>
-                        </StackPanel>
-                    </DockPanel>
+                            <Border Background="{DynamicResource Field}" CornerRadius="9" Padding="3">
+                                <UniformGrid Rows="1">
+                                    <RadioButton x:Name="TeamRed" GroupName="Team" Style="{StaticResource Segment}"
+                                                 Height="26" Content="Красных" Checked="Team_Checked"/>
+                                    <RadioButton x:Name="TeamBlue" GroupName="Team" Style="{StaticResource Segment}"
+                                                 Height="26" Content="Синих" Checked="Team_Checked"/>
+                                    <RadioButton x:Name="TeamBoth" GroupName="Team" Style="{StaticResource Segment}"
+                                                 Height="26" Content="Обе" Checked="Team_Checked"/>
+                                </UniformGrid>
+                            </Border>
+                        </DockPanel>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
@@ -171,36 +305,273 @@
                                        Foreground="{DynamicResource SubText}"/>
                         </StackPanel>
                     </DockPanel>
+                    <DockPanel Margin="0,12,0,0">
+                        <TextBlock Text="Сигнал при старте" FontSize="12" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="SoundToggle" Style="{StaticResource Chip}" Width="76" Margin="0,0,6,0"
+                                    Click="SoundToggle_Click" ToolTip="Короткий звук при старте и остановке кликов">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE767;" FontSize="11"
+                                               Margin="0,1,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Звук" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="ToastToggle" Style="{StaticResource Chip}" Width="100"
+                                    Click="ToastToggle_Click" ToolTip="Плашка «Кликер включён / выключен» сверху экрана">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE8BD;" FontSize="11"
+                                               Margin="0,1,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Подсказка" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </DockPanel>
                 </StackPanel>
             </Border>
 
-            <!-- Старт -->
-            <Button x:Name="StartButton" Style="{StaticResource BigButton}" Margin="0,16,0,0" Click="Start_Click">
-                <Button.Effect>
-                    <DropShadowEffect x:Name="StartShadow" Color="#2685F2" BlurRadius="18" ShadowDepth="4"
-                                      Direction="270" Opacity="0.35"/>
-                </Button.Effect>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock x:Name="StartGlyph" FontFamily="{StaticResource IconFont}" FontSize="13"
-                               Text="&#xE768;" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="StartText" Text="Старт" Margin="10,0" FontSize="15" FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
-                    <Border Background="#38FFFFFF" CornerRadius="6" Padding="7,1,7,2" VerticalAlignment="Center">
-                        <TextBlock x:Name="StartKey" FontSize="12" FontWeight="Bold"/>
-                    </Border>
-                </StackPanel>
-            </Button>
 
-            <DockPanel Margin="4,10,4,0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE7C9;" FontSize="11"
-                               Foreground="{DynamicResource SubText}" Margin="0,1,5,0" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="ClicksText" FontSize="11" FontWeight="Medium"
-                               Foreground="{DynamicResource SubText}" VerticalAlignment="Center"/>
+            <!-- Таймер голда: клавиша 7 — табличка с отсчётом сверху экрана -->
+            <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource CardIcon}" Text="&#xE823;"/>
+                        <TextBlock Style="{StaticResource CardTitle}" Text="ТАЙМЕР ГОЛДА"/>
+                    </StackPanel>
+                    <DockPanel>
+                        <Border x:Name="GoldKeycap" MinWidth="42" Height="42" CornerRadius="10" Padding="10,0"
+                                Background="{DynamicResource KeycapBg}" BorderBrush="#E3A21A"
+                                BorderThickness="1,1,1,3">
+                            <TextBlock Text="7" FontSize="16" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button x:Name="GoldStartButton" Style="{StaticResource SoftButton}" Margin="0,0,6,0"
+                                    Click="GoldStart_Click" ToolTip="То же, что нажать 7"/>
+                            <Button x:Name="GoldToggle" Style="{StaticResource Chip}" Width="58" Height="30"
+                                    Click="GoldToggle_Click" ToolTip="Включить или выключить клавишу 7"/>
+                        </StackPanel>
+                        <StackPanel Margin="12,0,8,0" VerticalAlignment="Center">
+                            <TextBlock Text="Голд упадёт примерно через 45 с" FontSize="13" FontWeight="SemiBold"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock x:Name="GoldSub" FontSize="11" Margin="0,1,0,0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource SubText}"/>
+                        </StackPanel>
+                    </DockPanel>
                 </StackPanel>
-                <TextBlock x:Name="HintText" HorizontalAlignment="Right" FontSize="11" FontWeight="Medium"
-                           Foreground="{DynamicResource SubText}" VerticalAlignment="Center"/>
+            </Border>
+
+            </StackPanel>
+            </ScrollViewer>
             </DockPanel>
-        </StackPanel>
+
+            <!-- Вкладка «Подбор краски»: список красок занимает всё свободное место -->
+            <local:PaintPanel x:Name="PaintsPanel" Visibility="Collapsed"/>
+
+            <!-- Вкладка «Мои краски» -->
+            <local:MyPaintsPanel x:Name="MinePanel" Visibility="Collapsed"/>
+            </Grid>
+        </DockPanel>
+
+        <!-- Окошко перезахода: предупреждение про битву и выбор команды -->
+        <Grid x:Name="RejoinOverlay" Visibility="Collapsed" Background="#80101418"
+              MouseDown="RejoinOverlay_MouseDown">
+            <Border Style="{StaticResource Card}" Margin="22" Padding="18" VerticalAlignment="Center"
+                    MaxWidth="400">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="28" ShadowDepth="6" Direction="270" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Click="RejoinCancel_Click"
+                                ToolTip="Отмена (Esc)">
+                            <TextBlock Text="&#xE8BB;"/>
+                        </Button>
+                        <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE72C;" FontSize="15"
+                                   Foreground="{StaticResource Accent}" Margin="0,1,9,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Перезаход" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </DockPanel>
+
+                    <Border Background="{StaticResource WarnBg}" CornerRadius="12" Padding="12,10,12,11" Margin="0,12,0,0">
+                        <DockPanel>
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE7BA;" FontSize="17"
+                                       Foreground="{StaticResource Orange}" Margin="0,1,11,0" VerticalAlignment="Top"/>
+                            <StackPanel>
+                                <TextBlock Text="Ты должен быть в битве!" FontSize="13.5" FontWeight="Bold"
+                                           Foreground="{StaticResource Orange}"/>
+                                <TextBlock Margin="0,3,0,0" FontSize="12" TextWrapping="Wrap"
+                                           Text="Перезаход нажимает Esc → Enter. В битве это выход из боя, а в меню игры — выход из игры: танки закроются."/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Background="{StaticResource WarnBg}" CornerRadius="12" Padding="12,10,12,11" Margin="0,8,0,0">
+                        <DockPanel>
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE740;" FontSize="17"
+                                       Foreground="{StaticResource Orange}" Margin="0,1,11,0" VerticalAlignment="Top"/>
+                            <StackPanel>
+                                <TextBlock Text="Только в оконном режиме!" FontSize="13.5" FontWeight="Bold"
+                                           Foreground="{StaticResource Orange}"/>
+                                <TextBlock Margin="0,3,0,0" FontSize="12" TextWrapping="Wrap"
+                                           Text="Переключи игру в оконный режим. В полноэкранном перезаход не сработает."/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Точек нет: сначала выбрать -->
+                    <StackPanel x:Name="RejoinNoPoints">
+                        <TextBlock Margin="0,14,0,0" FontSize="12.5" TextWrapping="Wrap"
+                                   Text="Сначала выбери точку — кнопку «Играть» в лобби битвы. Туда кликер начнёт жать сразу после выхода из боя."/>
+                        <UniformGrid Rows="1" Margin="0,12,0,0">
+                            <Button Style="{StaticResource BigButton}" Height="42" Margin="0,0,5,0"
+                                    Background="{StaticResource RedGradient}" Click="RejoinPickRed_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE81D;" FontSize="12"
+                                               Margin="0,1,7,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="За красных" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource BigButton}" Height="42" Margin="5,0,0,0"
+                                    Background="{StaticResource BlueGradient}" Click="RejoinPickBlue_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE81D;" FontSize="12"
+                                               Margin="0,1,7,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="За синих" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+
+                    <!-- Точки есть: за кого перезайти -->
+                    <StackPanel x:Name="RejoinChoose">
+                        <TextBlock x:Name="RejoinQuestion" Margin="0,14,0,0" FontSize="13" FontWeight="SemiBold"
+                                   Text="За кого перезайти?"/>
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="RejoinRedColumn" Width="*"/>
+                                <ColumnDefinition x:Name="RejoinBlueColumn" Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="RejoinRedButton" Style="{StaticResource BigButton}" Height="50" Margin="0,0,5,0"
+                                    Background="{StaticResource RedGradient}" Click="RejoinRed_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="10" Height="10" Fill="White" Margin="0,1,9,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="За красных" FontSize="14.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="RejoinBlueButton" Grid.Column="1" Style="{StaticResource BigButton}" Height="50"
+                                    Margin="5,0,0,0" Background="{StaticResource BlueGradient}" Click="RejoinBlue_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="10" Height="10" Fill="White" Margin="0,1,9,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="За синих" FontSize="14.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        <TextBlock x:Name="RejoinFootnote" Margin="0,10,0,0" FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource SubText}"/>
+                    </StackPanel>
+
+                    <Button Style="{StaticResource SoftButton}" HorizontalAlignment="Center" Margin="0,14,0,0"
+                            Content="Отмена" Click="RejoinCancel_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Справка: что умеет приложение -->
+        <Grid x:Name="HelpOverlay" Visibility="Collapsed" Background="#80101418"
+              MouseDown="HelpOverlay_MouseDown">
+            <Border Style="{StaticResource Card}" Margin="18,22" Padding="18,16,8,16" MaxWidth="440">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="28" ShadowDepth="6" Direction="270" Opacity="0.3"/>
+                </Border.Effect>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,10,12">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Click="HelpClose_Click"
+                                ToolTip="Закрыть (Esc)">
+                            <TextBlock Text="&#xE8BB;"/>
+                        </Button>
+                        <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE897;" FontSize="15"
+                                   Foreground="{StaticResource Accent}" Margin="0,1,9,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Справка" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </DockPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource SlimScrollBar}"/>
+                        </ScrollViewer.Resources>
+                        <StackPanel Margin="0,0,12,0">
+                            <StackPanel Margin="0,0,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE7C9;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Кликер" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Интервал — раз в сколько миллисекунд кликать (50 мс = 20 кликов в секунду). «Под курсором» — кликает туда, где мышь. «В выбранную точку» — в кнопку «Играть»: выбери точку за красных и за синих, они запоминаются. «Заходить за» — красных, синих или обе по очереди. «Показать» — на 3 секунды подсветит, где стоят точки."/>
+                            </StackPanel>
+                            <StackPanel Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE765;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Старт и стоп" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Клавиша 6 (можно поменять) — старт и стоп из любого окна, пока AmigoCapy не свёрнут. Esc тоже останавливает кликер. При старте и стопе — короткий звук и плашка сверху экрана, их можно выключить кнопками «Звук» и «Подсказка»."/>
+                            </StackPanel>
+                            <StackPanel Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE72C;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Перезаход" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Только в битве и в оконном режиме игры — в меню Esc → Enter закроет игру. Нажми «Перезаход» и выбери команду. Дальше отсчёт 3-2-1, клик в точку (окно игры станет активным), Esc, Enter и 2 секунды кликов в «Играть» — потом кликер выключится сам."/>
+                            </StackPanel>
+                            <StackPanel Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE823;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Таймер голда" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Нажми 7 — сверху появится табличка «Голд упадёт примерно через 45 с», последние 10 секунд красным, в конце — «Удачи, маленький амигос!!». Ещё раз 7 — сброс. Выключить клавишу — кнопка «Вкл» в карточке."/>
+                            </StackPanel>
+                            <StackPanel Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE790;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Подбор краски" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Отметь пушки врагов: клик — +1, правый клик — −1, до 4 видов. Ниже краски, отсортированные по средней защите от всей команды врагов. «Только мои» — выбирать только из твоих красок."/>
+                            </StackPanel>
+                            <StackPanel Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE73E;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Мои краски" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Отметь краски, которые у тебя есть, — в «Подборе» у них будет «✓ есть»."/>
+                            </StackPanel>
+                            <StackPanel Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE718;" FontSize="13"
+                                               Foreground="{StaticResource Accent}" Margin="0,1,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Полезно знать" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Margin="21,4,0,0" FontSize="12" TextWrapping="Wrap" LineHeight="17"
+                                           Foreground="{DynamicResource SubText}"
+                                           Text="Булавка сверху — держать окно поверх игры. Не открывай две копии AmigoCapy сразу. Если игра запущена от имени администратора, запусти и AmigoCapy от имени администратора."/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

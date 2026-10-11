@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Собирает AmigoClick.app (Apple Silicon + Intel) и AmigoClick.dmg в папку dist/.
+# Собирает AmigoCapy.app (Apple Silicon + Intel) и AmigoCapy.dmg в папку dist/.
 # Нужен macOS с Xcode или Command Line Tools: bash scripts/build.sh
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-APP_NAME="AmigoClick"
-VERSION="${VERSION:-1.0}"
+APP_NAME="AmigoCapy"
+VERSION="${VERSION:-1.6}"
 BUILD_NUMBER="${BUILD_NUMBER:-1}"
 MIN_MACOS="12.0"
 DIST="dist"
@@ -25,6 +25,11 @@ done
 lipo -create "${binaries[@]}" -output "$APP/Contents/MacOS/$APP_NAME"
 
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+
+echo "==> Картинки пушек и красок (общие с Windows-версией)"
+mkdir -p "$APP/Contents/Resources/turrets" "$APP/Contents/Resources/paints"
+cp windows/Assets/turrets/*.png "$APP/Contents/Resources/turrets/"
+cp windows/Assets/paints/*.png "$APP/Contents/Resources/paints/"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
 

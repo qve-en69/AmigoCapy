@@ -8,7 +8,7 @@ final class LocationPicker {
     private var keyMonitor: Any?
     private var completion: ((CGPoint?) -> Void)?
 
-    func begin(completion: @escaping (CGPoint?) -> Void) {
+    func begin(hint: String = "Кликни в нужное место", completion: @escaping (CGPoint?) -> Void) {
         guard self.completion == nil else { return }
         self.completion = completion
 
@@ -28,6 +28,7 @@ final class LocationPicker {
             window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
 
             let view = PickerView(frame: NSRect(origin: .zero, size: screen.frame.size))
+            view.hint = hint
             view.onFinish = { [weak self] point in
                 self?.finish(point)
             }
@@ -83,6 +84,7 @@ private final class PickerWindow: NSWindow {
 
 private final class PickerView: NSView {
     var onFinish: ((CGPoint?) -> Void)?
+    var hint = "Кликни в нужное место"
     var mouse: NSPoint? {
         didSet { needsDisplay = true }
     }
@@ -204,7 +206,7 @@ private final class PickerView: NSView {
     }
 
     private func drawHint() {
-        let text = "Кликни в нужное место   ·   Esc — отмена" as NSString
+        let text = "\(hint)   ·   Esc — отмена" as NSString
         let attrs: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: 14, weight: .medium),
             .foregroundColor: NSColor.white,

@@ -5,13 +5,13 @@
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>AmigoClick</AssemblyName>
-    <RootNamespace>AmigoClick</RootNamespace>
-    <ApplicationIcon>AmigoClick.ico</ApplicationIcon>
+    <AssemblyName>AmigoCapy</AssemblyName>
+    <RootNamespace>AmigoCapy</RootNamespace>
+    <ApplicationIcon>AmigoCapy.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>1.0.0</Version>
-    <Product>AmigoClick</Product>
-    <AssemblyTitle>AmigoClick</AssemblyTitle>
+    <Version>1.6.0</Version>
+    <Product>AmigoCapy</Product>
+    <AssemblyTitle>AmigoCapy</AssemblyTitle>
     <Description>Автокликер</Description>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
@@ -19,7 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="AmigoClick.ico" />
+    <Resource Include="AmigoCapy.ico" />
+    <Resource Include="Assets\**\*.png" />
   </ItemGroup>
 
 </Project>

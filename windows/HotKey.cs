@@ -2,7 +2,7 @@ using System;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace AmigoClick
+namespace AmigoCapy
 {
     internal sealed class HotKey
     {
@@ -89,35 +89,36 @@ namespace AmigoClick
     internal sealed class HotKeyService
     {
         private const int WM_HOTKEY = 0x0312;
-        private const int Id = 0xA11C;
-
+        private readonly int id;
         private readonly IntPtr hwnd;
         private bool registered;
 
         public event Action Pressed;
 
-        public HotKeyService(IntPtr hwnd)
+        /// <param name="id">Свой номер для каждой клавиши: у кликера и таймера голда они разные.</param>
+        public HotKeyService(IntPtr hwnd, int id)
         {
             this.hwnd = hwnd;
+            this.id = id;
             HwndSource.FromHwnd(hwnd).AddHook(WndProc);
         }
 
         public bool Register(HotKey key)
         {
             Unregister();
-            registered = Native.RegisterHotKey(hwnd, Id, key.Modifiers | Native.MOD_NOREPEAT, key.Vk);
+            registered = Native.RegisterHotKey(hwnd, id, key.Modifiers | Native.MOD_NOREPEAT, key.Vk);
             return registered;
         }
 
         public void Unregister()
         {
-            if (registered) Native.UnregisterHotKey(hwnd, Id);
+            if (registered) Native.UnregisterHotKey(hwnd, id);
             registered = false;
         }
 
         private IntPtr WndProc(IntPtr h, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == WM_HOTKEY && wParam.ToInt32() == Id)
+            if (msg == WM_HOTKEY && wParam.ToInt32() == id)
             {
                 handled = true;
                 Pressed?.Invoke();

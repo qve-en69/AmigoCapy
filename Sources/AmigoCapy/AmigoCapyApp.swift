@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct AmigoClickApp: App {
+struct AmigoCapyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var model = ClickerModel()
 

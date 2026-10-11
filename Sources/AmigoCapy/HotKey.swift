@@ -56,38 +56,48 @@ struct HotKey: Equatable {
     ]
 }
 
-/// Регистрирует системную горячую клавишу через Carbon: срабатывает в любом приложении
-/// и не требует разрешения «Мониторинг ввода».
+/// Регистрирует системные горячие клавиши через Carbon: срабатывают в любом приложении
+/// и не требуют разрешения «Мониторинг ввода». У каждой клавиши свой номер (id).
 final class HotKeyCenter {
     static let shared = HotKeyCenter()
 
-    var onPress: (() -> Void)?
+    /// Что делать при нажатии клавиши с данным номером. Вызывается в главном потоке.
+    var handlers: [UInt32: () -> Void] = [:]
 
-    private var hotKeyRef: EventHotKeyRef?
+    private var refs: [UInt32: EventHotKeyRef] = [:]
     private var handlerRef: EventHandlerRef?
 
     @discardableResult
-    func register(keyCode: UInt32, modifiers: UInt32) -> Bool {
-        unregister()
+    func register(id: UInt32, keyCode: UInt32, modifiers: UInt32) -> Bool {
+        unregister(id: id)
         installHandler()
-        let id = EventHotKeyID(signature: OSType(0x414D_434B), id: 1) // 'AMCK'
-        let status = RegisterEventHotKey(keyCode, modifiers, id, GetEventDispatcherTarget(), 0, &hotKeyRef)
-        return status == OSStatus(noErr)
+        var ref: EventHotKeyRef?
+        let hotKeyID = EventHotKeyID(signature: OSType(0x414D_434B), id: id) // 'AMCK'
+        let status = RegisterEventHotKey(keyCode, modifiers, hotKeyID, GetEventDispatcherTarget(), 0, &ref)
+        guard status == OSStatus(noErr), let ref else { return false }
+        refs[id] = ref
+        return true
     }
 
-    func unregister() {
-        if let hotKeyRef {
-            UnregisterEventHotKey(hotKeyRef)
+    func unregister(id: UInt32) {
+        if let ref = refs.removeValue(forKey: id) {
+            UnregisterEventHotKey(ref)
         }
-        hotKeyRef = nil
     }
 
     private func installHandler() {
         guard handlerRef == nil else { return }
         var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
-        InstallEventHandler(GetEventDispatcherTarget(), { _, _, _ in
+        InstallEventHandler(GetEventDispatcherTarget(), { _, event, _ in
+            guard let event else { return OSStatus(eventNotHandledErr) }
+            var hotKeyID = EventHotKeyID()
+            let status = GetEventParameter(event, EventParamName(kEventParamDirectObject),
+                                           EventParamType(typeEventHotKeyID), nil,
+                                           MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
+            guard status == OSStatus(noErr) else { return OSStatus(eventNotHandledErr) }
+            let id = hotKeyID.id
             DispatchQueue.main.async {
-                HotKeyCenter.shared.onPress?()
+                HotKeyCenter.shared.handlers[id]?()
             }
             return OSStatus(noErr)
         }, 1, &spec, nil, &handlerRef)

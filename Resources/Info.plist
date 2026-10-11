@@ -9,13 +9,13 @@
 		<string>ru</string>
 	</array>
 	<key>CFBundleDisplayName</key>
-	<string>AmigoClick</string>
+	<string>AmigoCapy</string>
 	<key>CFBundleName</key>
-	<string>AmigoClick</string>
+	<string>AmigoCapy</string>
 	<key>CFBundleExecutable</key>
-	<string>AmigoClick</string>
+	<string>AmigoCapy</string>
 	<key>CFBundleIdentifier</key>
-	<string>app.amigoclick.AmigoClick</string>
+	<string>app.amigocapy.AmigoCapy</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleInfoDictionaryVersion</key>
