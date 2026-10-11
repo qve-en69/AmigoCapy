@@ -1,0 +1,41 @@
+name: Build macOS app
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Версия
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          fi
+          echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
+      - name: Swift
+        run: swift --version
+
+      - name: Сборка
+        run: bash scripts/build.sh
+
+      - name: Файл сборки
+        uses: actions/upload-artifact@v4
+        with:
+          name: AmigoClick
+          path: dist/AmigoClick.dmg
+
+      - name: Релиз (для тегов v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/AmigoClick.dmg
