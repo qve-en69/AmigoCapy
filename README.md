@@ -1,6 +1,6 @@
 # AmigoClick
 
-Автокликер для macOS 13+ (Apple Silicon и Intel) и Windows 10/11: интервал в миллисекундах, клик под курсором или в выбранную точку, глобальная клавиша старта и стопа (по умолчанию `6`).
+Автокликер для macOS 12+ (Apple Silicon и Intel) и Windows 10/11: интервал в миллисекундах, клик под курсором или в выбранную точку, глобальная клавиша старта и стопа (по умолчанию `6`).
 
 - macOS — Swift/SwiftUI, корень репозитория (`Package.swift`, `Sources/`).
 - Windows — WPF на .NET Framework 4.8 (`windows/`), один `AmigoClick.exe` без установки.

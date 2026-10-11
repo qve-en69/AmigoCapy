@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 APP_NAME="AmigoClick"
 VERSION="${VERSION:-1.0}"
 BUILD_NUMBER="${BUILD_NUMBER:-1}"
-MIN_MACOS="13.0"
+MIN_MACOS="12.0"
 DIST="dist"
 APP="$DIST/$APP_NAME.app"
 

@@ -6,12 +6,13 @@ struct AmigoClickApp: App {
     @StateObject private var model = ClickerModel()
 
     var body: some Scene {
-        Window("AmigoClick", id: "main") {
+        // WindowGroup и фиксированный размер через AppKit (ClickerModel.attach) —
+        // Window и windowResizability появились только в macOS 13.
+        WindowGroup {
             ContentView()
                 .environmentObject(model)
         }
         .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) {}
         }

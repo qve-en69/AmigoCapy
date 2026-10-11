@@ -28,6 +28,7 @@ struct ContentView: View {
         .padding(.top, 4)
         .padding(.bottom, 18)
         .frame(width: 384)
+        .fixedSize()
         .background(Backdrop().ignoresSafeArea())
         .background(WindowAccessor { model.attach(window: $0) })
         .animation(.easeInOut(duration: 0.2), value: model.hasAccessibility)

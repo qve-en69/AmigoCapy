@@ -343,6 +343,8 @@ final class ClickerModel: ObservableObject {
         guard self.window !== window else { return }
         self.window = window
         window.isMovableByWindowBackground = true
+        window.styleMask.remove(.resizable)
+        window.collectionBehavior.insert(.fullScreenNone)
         applyWindowLevel()
     }
 
